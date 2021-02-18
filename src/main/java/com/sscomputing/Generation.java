@@ -1,7 +1,5 @@
 package com.sscomputing;
 
-import java.util.stream.IntStream;
-
 public class Generation {
     public Grid advance(Grid input) {
         Grid current = input;
@@ -41,19 +39,5 @@ public class Generation {
             }
         }
         return next;
-    }
-
-    // TODO: This is not as efficient as it could be
-    private int getDimension(Grid g) {
-        int adder = 0;
-        for (int i=0; i < g.getColumnCount(); i++) {
-            if (g.getCell(0, i)) adder++;
-            if (g.getCell(g.getRowCount()-1, i)) adder++;
-        }
-        for (int i=0; i < g.getRowCount(); i++) {
-            if (g.getCell(i, 0)) adder++;
-            if (g.getCell(i, g.getColumnCount()-1)) adder++;
-        }
-        return g.getRowCount() + adder;
     }
 }
