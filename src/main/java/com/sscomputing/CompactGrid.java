@@ -31,6 +31,18 @@ public class CompactGrid implements Grid {
         return grid.get(i);
     }
     @Override
+    public boolean isRowEmpty(int i) {
+        if (grid.get(i).nextSetBit(0) < 0) return true;
+        return false;
+    }
+    @Override
+    public boolean isColumnEmpty(int j) {
+        for (BitSet bs : grid) {
+            if (bs.get(j)) return false;
+        }
+        return true;
+    }
+    @Override
     public boolean getCell(int i, int j) {
         return grid.get(i).get(j);
     }
@@ -66,5 +78,15 @@ public class CompactGrid implements Grid {
     @Override
     public Grid getNewEmptyGrid() {
         return getNewEmptyGrid(getRowCount(), getColumnCount());
+    }
+
+    // TODO This is inefficient.
+    @Override
+    public void copyFromGrid(int rowOffset, int colOffset, Grid old) {
+        for (int i=0; i < old.getRowCount(); i++) {
+            for (int j=0; j < old.getColumnCount(); j++) {
+                if (old.getCell(i, j)) grid.get(i+rowOffset).set(j+colOffset);
+            }
+        }
     }
 }

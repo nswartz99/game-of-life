@@ -94,4 +94,28 @@ public class BooleanGrid implements Grid {
     public Grid getNewEmptyGrid() {
         return getNewEmptyGrid(getRowCount(), getColumnCount());
     }
+
+    @Override
+    public boolean isRowEmpty(int i) {
+        for (Boolean cell : rows.get(i).cells) {
+            if (cell) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isColumnEmpty(int j) {
+        for (Row r : rows) {
+            if (r.getCell(j)) return true;
+        }
+        return false;
+    }
+    @Override
+    public void copyFromGrid(int rowOffset, int colOffset, Grid old) {
+        for (int i=0; i < old.getRowCount(); i++) {
+            for (int j=0; j < old.getColumnCount(); j++) {
+                if (old.getCell(i, j)) rows.get(i+rowOffset).setCell(j+colOffset);
+            }
+        }
+    }
 }

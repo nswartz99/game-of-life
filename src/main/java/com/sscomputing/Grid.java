@@ -9,4 +9,7 @@ public interface Grid {
     void setCell(int i, int j, boolean b);
     Grid getNewEmptyGrid(int i, int j);
     Grid getNewEmptyGrid();
+    boolean isRowEmpty(int i);
+    boolean isColumnEmpty(int j);
+    void copyFromGrid(int rowOffset, int colOffset, Grid old);
 }
