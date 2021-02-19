@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class BasicTest {
@@ -113,6 +114,7 @@ public class BasicTest {
     }
 
     @Test
+    @Ignore
     public void rPentomnio() {
         rPentominoInit();
         main.iterate(50);

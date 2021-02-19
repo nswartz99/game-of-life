@@ -17,20 +17,87 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <version.server.bom>19.0.1.Final</version.server.bom>
+    <version.wildfly.maven.plugin>2.0.0.Final</version.wildfly.maven.plugin>
+    <version.failsafe.plugin>3.0.0-M5</version.failsafe.plugin>
+    <version.ejb.plugin>3.1.0</version.ejb.plugin>
   </properties>
+  <dependencyManagement>
+      <dependencies>
+          <!-- importing the jakartaee8-with-tools BOM adds specs and other useful artifacts as managed dependencies -->
+          <dependency>
+              <groupId>org.wildfly.bom</groupId>
+              <artifactId>wildfly-jakartaee8-with-tools</artifactId>
+              <version>${version.server.bom}</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+          <!-- importing the microprofile BOM adds MicroProfile specs -->
+          <dependency>
+              <groupId>org.wildfly.bom</groupId>
+              <artifactId>wildfly-microprofile</artifactId>
+              <version>${version.server.bom}</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.13.2</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.arquillian.junit</groupId>
+        <artifactId>arquillian-junit-container</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <!-- Import the CDI API, we use provided scope as the API is included in WildFly -->
+    <dependency>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <!-- Import the Common Annotations API (JSR-250), we use provided scope
+        as the API is included in WildFly -->
+    <dependency>
+        <groupId>org.jboss.spec.javax.annotation</groupId>
+        <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <!-- Import the Servlet API, we use provided scope as the API is included in WildFly -->
+    <dependency>
+        <groupId>org.jboss.spec.javax.servlet</groupId>
+        <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>javax.jws</groupId>
+        <artifactId>jsr181-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.spec.javax.xml.ws</groupId>
+        <artifactId>jboss-jaxws-api_2.3_spec</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.wildfly.arquillian</groupId>
+        <artifactId>wildfly-arquillian-container-remote</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-jaxws-client-bom</artifactId>
+        <version>22.0.1.Final</version>
+        <type>pom</type>
     </dependency>
   </dependencies>
 
   <build>
     <finalName>game-of-life</finalName>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
@@ -61,7 +128,57 @@
           <artifactId>maven-deploy-plugin</artifactId>
           <version>2.8.2</version>
         </plugin>
-      </plugins>
-    </pluginManagement>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${version.failsafe.plugin}</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>integration-test</goal>
+                        <goal>verify</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>org.wildfly.plugins</groupId>
+            <artifactId>wildfly-maven-plugin</artifactId>
+            <version>${version.wildfly.maven.plugin}</version>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-ejb-plugin</artifactId>
+            <version>${version.ejb.plugin}</version>
+            <configuration>
+                <!-- Tell Maven we are using EJB -->
+                <ejbVersion>3.2</ejbVersion>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.eclipse.m2e</groupId>
+            <artifactId>lifecycle-mapping</artifactId>
+            <version>1.0.0</version>
+            <configuration>
+                <lifecycleMappingMetadata>
+                    <pluginExecutions>
+                        <pluginExecution>
+                            <pluginExecutionFilter>
+                                <groupId>org.jboss.ws.plugins</groupId>
+                                <artifactId>jaxws-tools-maven-plugin</artifactId>
+                                <versionRange>[1.2.0.Final,)</versionRange>
+                                <goals>
+                                    <goal>wsconsume</goal>
+                                </goals>
+                            </pluginExecutionFilter>
+                            <action>
+                                <ignore></ignore>
+                            </action>
+                        </pluginExecution>
+                    </pluginExecutions>
+                </lifecycleMappingMetadata>
+            </configuration>
+        </plugin>
+       </plugins>
   </build>
 </project>
