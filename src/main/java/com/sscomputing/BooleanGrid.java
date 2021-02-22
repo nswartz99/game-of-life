@@ -117,4 +117,26 @@ public class BooleanGrid implements Grid {
             }
         }
     }
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        for (int i=0; i < this.getRowCount(); i++) {
+            for (int j=0; j < this.getColumnCount(); j++) {
+                s.append(rows.get(i).getCell(j) ? "X" : "_");
+            }
+            s.append("\n");
+        }
+        s.append("\n");
+        return s.toString();
+    }
+    @Override
+    public Boolean[][] toBooleanArray() {
+        Boolean[][] b = new Boolean[this.getRowCount()][this.getColumnCount()];
+        for (int i=0; i < this.getRowCount(); i++) {
+            for (int j=0; j < this.getColumnCount(); j++) {
+                b[i][j] = this.getCell(i, j);
+            }
+        }
+        return b;
+    }
+
 }

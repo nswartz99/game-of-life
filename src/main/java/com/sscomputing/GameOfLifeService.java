@@ -7,4 +7,8 @@ import javax.jws.WebService;
 public interface GameOfLifeService {
     @WebMethod
     String sayHello();
+    @WebMethod
+    Boolean[][] iterate(Boolean[][] g);
+    @WebMethod
+    Boolean[][] sayBooleanArray();
 }

@@ -82,6 +82,7 @@
     <dependency>
         <groupId>org.jboss.spec.javax.xml.ws</groupId>
         <artifactId>jboss-jaxws-api_2.3_spec</artifactId>
+        <scope>provided</scope>
     </dependency>
     <dependency>
         <groupId>org.wildfly.arquillian</groupId>
@@ -93,6 +94,7 @@
         <artifactId>wildfly-jaxws-client-bom</artifactId>
         <version>22.0.1.Final</version>
         <type>pom</type>
+        <scope>test</scope>
     </dependency>
   </dependencies>
 

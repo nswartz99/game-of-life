@@ -1,12 +1,119 @@
 <html>
-<body>
-<h2>Hello World! Index.html</h2>
-<p>
-    There is no user interface for this quickstart. Instead, you can verify the
-    Web Service is running and deployed correctly by accessing the following URL:
-</p>
-<div style="margin-left: 1em;">
-    <a href="GameOfLifeService?wsdl">GameOfLifeService?wsdl</a>
-</div>
-</body>
+    <head>
+        <script type="text/javascript" charset="UTF-8" src="//cdnjs.cloudflare.com/ajax/libs/jsxgraph/1.2.1/jsxgraphcore.js"></script>
+        <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jsxgraph/1.2.1/jsxgraph.css" />
+    </head>
+    <body>
+        <h2>Hello World! Index.html</h2>
+        <p>
+            There is no user interface for this quickstart. Instead, you can verify the
+            Web Service is running and deployed correctly by accessing the following URL:
+        </p>
+        <div style="margin-left: 1em;">
+            <a href="GameOfLifeService?wsdl">GameOfLifeService?wsdl</a>
+        </div>
+        <p/>
+        <div id="box" class="jxgbox" style="width:500px; height:500px;"></div>
+        <script type="text/javascript">
+            var board = JXG.JSXGraph.initBoard('box', {boundingbox: [-10, 10, 10, -10], axis:false, grid:false, showNavigation:false, showCopyright:false});
+//            board.create('point', [1,2], {name:'', strokecolor:'red', face:'square', size:1});
+//            board.create('point', [2,4], {name:'', strokecolor:'green', face:'square', size:1});
+//            board.create('point', [2.1,4], {name:'', strokecolor:'blue', face:'square', size:1});
+//            var grid = [[false, true, false], [false, true, false], [false, true, false]]; // Blinker
+            var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
+
+            for (i=0; i < grid.length; i++) {
+                for (j=0; j < grid[i].length; j++) {
+                    if (grid[i][j] && false) board.create('point', [j,i], {name:'', strokecolor:'red', face:'square', size:1});
+                }
+            }
+            var sr = new Array();
+            sr.push('<?xml version="1.0" encoding="utf-8"?>');
+            sr.push('<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+                    'xmlns:api="http://sscomputing.com/game-of-life/GameOfLife" ' +
+                    'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
+                    'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">');
+            sr.push('<soapenv:Body>');
+            sr.push('<api:iterate soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
+            for (i=0; i < grid.length; i++) {
+                sr.push('<arg0>');
+                for (j=0; j < grid[i].length; j++) {
+                    sr.push('<item>' + grid[i][j] + '</item>');
+                }
+                sr.push('</arg0>');
+            }
+            sr.push('</api:iterate>');
+            sr.push('</soapenv:Body>');
+            sr.push('</soapenv:Envelope>');
+            fetch('http://127.0.0.1:8080/game-of-life/GameOfLifeService', {
+                    method: 'POST',
+                    body: sr.join(''),
+                    headers: {
+                        'Content-Type': 'text/xml'
+                    }
+                }).catch(ex => alert('Error:' + ex.message)).then(response => {
+                    response = response.text();
+                    alert('Got Response' + response);
+                    response.then(result => {
+                        const parser = new DOMParser();
+                        alert('XML:' + result.toString());
+                        const doc = parser.parseFromString(result.toString(), 'text/xml');
+                        const resultArray = doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null);
+                        const resultGrid = new Array();
+                        var newgrid = [];
+                        var node = resultArray.iterateNext();
+                        for (i=0; node != null; i++) {
+                            const rowArray = doc.evaluate('//return[' + i + ']/item', node, null, XPathResult.ANY_TYPE, null);
+                            newgrid.push([]);
+                            var cell = rowArray.iterateNext();
+                            for (j=0; cell != null; j++) {
+                                newgrid[i].push(cell.textContent);
+                                var color = 'blue';
+                                if (cell.textContent.match('true')) color = 'red';
+                                board.create('point', [j,0-i], {name:'', strokecolor:color, face:'square', size:1});
+                                cell = rowArray.iterateNext();
+                            }
+                            node = resultArray.iterateNext();
+                        }
+//                        alert('Result:' + doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null).iterateNext().textContent);
+                        alert('Result:' + newgrid.join(','));
+                    });
+                    return response;
+                });
+            alert('fetched');
+/*
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns2:sayHelloResponse xmlns:ns2="http://sscomputing.com/game-of-life/GameOfLife">
+            <return>Hello Game</return></ns2:sayHelloResponse></soap:Body></soap:Envelope>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns2:sayBooleanArrayResponse xmlns:ns2="http://sscomputing.com/game-of-life/GameOfLife">
+            <return>
+                <item>false</item>
+                <item>true</item>
+                <item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            </return>
+            <return>
+                <item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <item>true</item>
+                <item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            </return>
+            <return><item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/><item>true</item><item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/></return></ns2:sayBooleanArrayResponse></soap:Body></soap:Envelope>
+
+            const userAction = async() => {
+                const response = await fetch('http://127.0.0.1:8080/game-of-life/GameOfLifeService', {
+                    method: 'POST',
+                    body: sr,
+                    headers: {
+                        'Content-Type': 'text/xml'
+                    }
+                }).catch(ex => alert('Error:' + ex.message));
+                alert('fetched');
+                const myJson = await response.json();
+                alert(myJson);
+            }
+*/
+        </script>
+    </body>
 </html>

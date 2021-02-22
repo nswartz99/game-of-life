@@ -44,11 +44,18 @@ public class BasicIT {
     public void testHello() {
         System.out.println("[Client] Requesting the WebService to say Hello.");
 
-        // Get a response from the WebService
         final String response = client.sayHello();
         assertEquals("Hello Game", response);
-
         System.out.println("[WebService] " + response);
+    }
+    @Test
+    public void testIterate() {
+        System.out.println("[Client] Requesting the WebService to Iterate.");
+
+        Boolean[][] g = new Boolean[3][3];
+        g[0][1] = true; g[1][1] = true; g[2][1] = true; 
+        final Boolean[][] response = client.iterate(g);
+        System.out.println("[WebService] Result:\n" + response);
 
     }
 }

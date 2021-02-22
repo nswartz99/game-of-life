@@ -36,4 +36,14 @@ public class GameOfLifeClient implements GameOfLifeService {
         return gameOfLifeService.sayHello();
     }
 
+    @Override
+    public Boolean[][] iterate(Boolean[][] g) {
+        return gameOfLifeService.iterate(g);
+    }
+
+    @Override
+    public Boolean[][] sayBooleanArray() {
+        return gameOfLifeService.sayBooleanArray();
+    }
+
 }

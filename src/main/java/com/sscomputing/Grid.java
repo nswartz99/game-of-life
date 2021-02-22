@@ -12,4 +12,6 @@ public interface Grid {
     boolean isRowEmpty(int i);
     boolean isColumnEmpty(int j);
     void copyFromGrid(int rowOffset, int colOffset, Grid old);
+    String toString();
+    Boolean[][] toBooleanArray();
 }
