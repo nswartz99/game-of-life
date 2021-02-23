@@ -46,4 +46,9 @@ public class GameOfLifeClient implements GameOfLifeService {
         return gameOfLifeService.sayBooleanArray();
     }
 
+    @Override
+    public String iterateCompact(String g) {
+        return gameOfLifeService.iterateCompact(g);
+    }
+
 }

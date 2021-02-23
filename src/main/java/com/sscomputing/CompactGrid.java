@@ -111,4 +111,16 @@ public class CompactGrid implements Grid {
         }
         return b;
     }
+
+    @Override
+    public String toCompactString() {
+        StringBuilder s = new StringBuilder();
+        for (int i=0; i < this.getRowCount(); i++) {
+            for (int j=0; j < this.getColumnCount(); j++) {
+                s.append(this.getCell(i, j) ? "1" : "0");
+            }
+            if (i < this.getRowCount()-1) s.append(",");
+        }
+        return s.toString();
+    }
 }

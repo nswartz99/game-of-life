@@ -138,5 +138,27 @@ public class BooleanGrid implements Grid {
         }
         return b;
     }
+    public static BooleanGrid fromString(String s) {
+        String[] compactRows = s.split(",");
+        Boolean[][] b = new Boolean[compactRows.length][compactRows[0].length()];
+        for (int i=0; i < compactRows.length; i++) {
+            for (int j=0; j < compactRows[0].length(); j++) {
+                b[i][j] = (compactRows[i].charAt(j) == '1' ? true : false);
+            }
+        }
+        return new BooleanGrid(b);
+    }
+
+    @Override
+    public String toCompactString() {
+        StringBuilder s = new StringBuilder();
+        for (int i=0; i < this.getRowCount(); i++) {
+            for (int j=0; j < this.getColumnCount(); j++) {
+                s.append(rows.get(i).getCell(j) ? "1" : "0");
+            }
+            if (i < this.getRowCount()-1) s.append(",");
+        }
+        return s.toString();
+    }
 
 }

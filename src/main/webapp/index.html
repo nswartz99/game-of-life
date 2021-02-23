@@ -24,15 +24,19 @@
                         'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
                         'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">');
                 sr.push('<soapenv:Body>');
-                sr.push('<api:iterate soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
+                sr.push('<api:iterateCompact soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
+                sr.push('<arg0>');
+                var s = [];
                 for (i=0; i < g.length; i++) {
-                    sr.push('<arg0>');
+                    var row = [];
                     for (j=0; j < g[i].length; j++) {
-                        sr.push('<item>' + g[i][j] + '</item>');
+                        row.push(g[i][j] ? '1' : '0');
                     }
-                    sr.push('</arg0>');
+                    s.push(row.join(''));
                 }
-                sr.push('</api:iterate>');
+                sr.push(s.join(','));
+                sr.push('</arg0>');
+                sr.push('</api:iterateCompact>');
                 sr.push('</soapenv:Body>');
                 sr.push('</soapenv:Envelope>');
                 log(sr);
@@ -57,23 +61,17 @@
                 console.log('StartTime:' + d.toLocaleTimeString());
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(xml, 'text/xml');
-                log('XML:' + doc.textContent);
-                const resultArray = doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null);
-                const resultGrid = new Array();
+                const resultString = doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null);
                 var newgrid = [];
-                var node = resultArray.iterateNext();
-                for (i=0; node != null; i++) {
-                    const rowArray = doc.evaluate('//return[' + (i+1) + ']/item', node, null, XPathResult.ANY_TYPE, null);
-                    log('RA:' + rowArray);
+                var result = resultString.iterateNext().textContent;
+                log('returned:' + result);
+                result.split(',').forEach(row => {
+                    log('RA:' + row);
                     newgrid.push([]);
-                    var cell = rowArray.iterateNext();
-                    for (j=0; cell != null; j++) {
-                        log('cell:' + cell);
-                        if (cell.textContent.match('true')) newgrid[i].push(true); else newgrid[i].push(false);
-                        cell = rowArray.iterateNext();
+                    for (j=0; j < row.length; j++) {
+                        if (row[j].match('1')) newgrid[newgrid.length-1].push(true); else newgrid[newgrid.length-1].push(false);
                     }
-                    node = resultArray.iterateNext();
-                }
+                });
                 d = new Date();
                 console.log('endTime:' + d.toLocaleTimeString());
                 return newgrid;
@@ -88,9 +86,9 @@
                     for (j=0; j < grid[i].length; j++) {
                         var color = 'yellow';
                         if (grid[i][j]) color = 'red';
-                        ctx.fillStyle = 'rgb(200, 200, 200)';
+                        ctx.fillStyle = 'rgb(220, 220, 220)';
                         if (grid[i][j]) ctx.fillStyle = 'rgb(0, 0, 0)';
-                        ctx.fillRect(j*2, i*2, 2, 2);
+                        ctx.fillRect(j*3, i*3, 3, 3);
                     }
                 }
                 d = new Date();
@@ -105,15 +103,14 @@
                 return newgrid;
             }
             async function runLife() {
-//                var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
-                var grid = [[false,false,false,false], [false, true, true, true], [false, false, false, true], [false, false, true, false]]; // Glider
+                var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
+//                var grid = [[false,false,false,false], [false, true, true, true], [false, false, false, true], [false, false, true, false]]; // Glider
                 for (ii=0; ii < 100; ii++) {
                     console.log('Iteration ' + (ii+1));
                     grid = await iterate(grid);
                 }
             }
             runLife();
-            alert('fetched');
 /*
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
     <soap:Body>

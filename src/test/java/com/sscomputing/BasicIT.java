@@ -1,6 +1,8 @@
 package com.sscomputing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -55,7 +57,28 @@ public class BasicIT {
         Boolean[][] g = new Boolean[3][3];
         g[0][1] = true; g[1][1] = true; g[2][1] = true; 
         final Boolean[][] response = client.iterate(g);
+        System.out.println("[WebService] Result:\n" + response[0][0] + response[1][1] + response[2][2]);
+        assertFalse("g[0][0]", response[0][0]);
+        assertFalse("g[0][1]", response[0][0]);
+        assertFalse("g[0][2]", response[0][0]);
+        assertFalse("g[2][0]", response[2][0]);
+        assertTrue("g[2][1]", response[2][1]);
+        assertTrue("g[2][2]", response[2][2]);
+        assertFalse("g[3][0]", response[3][0]);
+        assertFalse("g[3][1]", response[3][1]);
+        assertFalse("g[3][2]", response[3][2]);
+
+    }
+    @Test
+    public void testCompactIterate() {
+        System.out.println("[Client] Requesting the WebService to CompactIterate.");
+
+        Boolean[][] g = new Boolean[3][3];
+        g[0][1] = true; g[1][1] = true; g[2][1] = true; 
+        String s = "010,010,010";
+        final String response = client.iterateCompact(s);
         System.out.println("[WebService] Result:\n" + response);
+        assertEquals("00000,00000,01110,00000,00000", response);
 
     }
 }
