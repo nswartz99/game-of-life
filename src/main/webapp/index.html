@@ -1,7 +1,5 @@
 <html>
     <head>
-        <script type="text/javascript" charset="UTF-8" src="//cdnjs.cloudflare.com/ajax/libs/jsxgraph/1.2.1/jsxgraphcore.js"></script>
-        <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jsxgraph/1.2.1/jsxgraph.css" />
     </head>
     <body>
         <h2>Hello World! Index.html</h2>
@@ -13,7 +11,7 @@
             <a href="GameOfLifeService?wsdl">GameOfLifeService?wsdl</a>
         </div>
         <p/>
-        <div id="box" class="jxgbox" style="width:500px; height:500px;"></div>
+        <canvas id="canvas" width="500" height="500"></canvas>
         <script type="text/javascript">
             function log(str) {
 //                console.log(str);
@@ -81,7 +79,8 @@
                 return newgrid;
             }
 
-            var board = JXG.JSXGraph.initBoard('box', {boundingbox: [-1, 1, 50, -50], axis:false, grid:false, showNavigation:false, showCopyright:false});
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
             function showGrid(grid) {
                 var d = new Date();
                 console.log('Show StartTime:' + d.toLocaleTimeString());
@@ -89,7 +88,9 @@
                     for (j=0; j < grid[i].length; j++) {
                         var color = 'yellow';
                         if (grid[i][j]) color = 'red';
-                        board.create('point', [j, 0-i], {name:'', strokecolor:color, face:'square', size:1});
+                        ctx.fillStyle = 'rgb(200, 200, 200)';
+                        if (grid[i][j]) ctx.fillStyle = 'rgb(0, 0, 0)';
+                        ctx.fillRect(j*2, i*2, 2, 2);
                     }
                 }
                 d = new Date();
@@ -104,8 +105,9 @@
                 return newgrid;
             }
             async function runLife() {
-                var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
-                for (ii=0; ii < 25; ii++) {
+//                var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
+                var grid = [[false,false,false,false], [false, true, true, true], [false, false, false, true], [false, false, true, false]]; // Glider
+                for (ii=0; ii < 100; ii++) {
                     console.log('Iteration ' + (ii+1));
                     grid = await iterate(grid);
                 }
