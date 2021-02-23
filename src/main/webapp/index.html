@@ -15,71 +15,102 @@
         <p/>
         <div id="box" class="jxgbox" style="width:500px; height:500px;"></div>
         <script type="text/javascript">
-            var board = JXG.JSXGraph.initBoard('box', {boundingbox: [-10, 10, 10, -10], axis:false, grid:false, showNavigation:false, showCopyright:false});
-//            board.create('point', [1,2], {name:'', strokecolor:'red', face:'square', size:1});
-//            board.create('point', [2,4], {name:'', strokecolor:'green', face:'square', size:1});
-//            board.create('point', [2.1,4], {name:'', strokecolor:'blue', face:'square', size:1});
-//            var grid = [[false, true, false], [false, true, false], [false, true, false]]; // Blinker
-            var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
+            function log(str) {
+//                console.log(str);
+            }
+            function getRequestBody(g) {
+                var sr = new Array();
+                sr.push('<?xml version="1.0" encoding="utf-8"?>');
+                sr.push('<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+                        'xmlns:api="http://sscomputing.com/game-of-life/GameOfLife" ' +
+                        'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
+                        'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">');
+                sr.push('<soapenv:Body>');
+                sr.push('<api:iterate soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
+                for (i=0; i < g.length; i++) {
+                    sr.push('<arg0>');
+                    for (j=0; j < g[i].length; j++) {
+                        sr.push('<item>' + g[i][j] + '</item>');
+                    }
+                    sr.push('</arg0>');
+                }
+                sr.push('</api:iterate>');
+                sr.push('</soapenv:Body>');
+                sr.push('</soapenv:Envelope>');
+                log(sr);
+                return sr.join('');
+            }
 
-            for (i=0; i < grid.length; i++) {
-                for (j=0; j < grid[i].length; j++) {
-                    if (grid[i][j] && false) board.create('point', [j,i], {name:'', strokecolor:'red', face:'square', size:1});
-                }
-            }
-            var sr = new Array();
-            sr.push('<?xml version="1.0" encoding="utf-8"?>');
-            sr.push('<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-                    'xmlns:api="http://sscomputing.com/game-of-life/GameOfLife" ' +
-                    'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
-                    'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">');
-            sr.push('<soapenv:Body>');
-            sr.push('<api:iterate soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
-            for (i=0; i < grid.length; i++) {
-                sr.push('<arg0>');
-                for (j=0; j < grid[i].length; j++) {
-                    sr.push('<item>' + grid[i][j] + '</item>');
-                }
-                sr.push('</arg0>');
-            }
-            sr.push('</api:iterate>');
-            sr.push('</soapenv:Body>');
-            sr.push('</soapenv:Envelope>');
-            fetch('http://127.0.0.1:8080/game-of-life/GameOfLifeService', {
+            async function sendRequest(req) {
+                var response = await fetch('http://127.0.0.1:8080/game-of-life/GameOfLifeService', {
                     method: 'POST',
-                    body: sr.join(''),
+                    body: req,
                     headers: {
                         'Content-Type': 'text/xml'
                     }
-                }).catch(ex => alert('Error:' + ex.message)).then(response => {
-                    response = response.text();
-                    alert('Got Response' + response);
-                    response.then(result => {
-                        const parser = new DOMParser();
-                        alert('XML:' + result.toString());
-                        const doc = parser.parseFromString(result.toString(), 'text/xml');
-                        const resultArray = doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null);
-                        const resultGrid = new Array();
-                        var newgrid = [];
-                        var node = resultArray.iterateNext();
-                        for (i=0; node != null; i++) {
-                            const rowArray = doc.evaluate('//return[' + i + ']/item', node, null, XPathResult.ANY_TYPE, null);
-                            newgrid.push([]);
-                            var cell = rowArray.iterateNext();
-                            for (j=0; cell != null; j++) {
-                                newgrid[i].push(cell.textContent);
-                                var color = 'blue';
-                                if (cell.textContent.match('true')) color = 'red';
-                                board.create('point', [j,0-i], {name:'', strokecolor:color, face:'square', size:1});
-                                cell = rowArray.iterateNext();
-                            }
-                            node = resultArray.iterateNext();
-                        }
-//                        alert('Result:' + doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null).iterateNext().textContent);
-                        alert('Result:' + newgrid.join(','));
-                    });
-                    return response;
                 });
+                response = await response.text();
+                log('Got Response' + response);
+                return await response;
+            }
+
+            function XMLtoGrid(xml) {
+                var d = new Date();
+                console.log('StartTime:' + d.toLocaleTimeString());
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(xml, 'text/xml');
+                log('XML:' + doc.textContent);
+                const resultArray = doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null);
+                const resultGrid = new Array();
+                var newgrid = [];
+                var node = resultArray.iterateNext();
+                for (i=0; node != null; i++) {
+                    const rowArray = doc.evaluate('//return[' + (i+1) + ']/item', node, null, XPathResult.ANY_TYPE, null);
+                    log('RA:' + rowArray);
+                    newgrid.push([]);
+                    var cell = rowArray.iterateNext();
+                    for (j=0; cell != null; j++) {
+                        log('cell:' + cell);
+                        if (cell.textContent.match('true')) newgrid[i].push(true); else newgrid[i].push(false);
+                        cell = rowArray.iterateNext();
+                    }
+                    node = resultArray.iterateNext();
+                }
+                d = new Date();
+                console.log('endTime:' + d.toLocaleTimeString());
+                return newgrid;
+            }
+
+            var board = JXG.JSXGraph.initBoard('box', {boundingbox: [-1, 1, 50, -50], axis:false, grid:false, showNavigation:false, showCopyright:false});
+            function showGrid(grid) {
+                var d = new Date();
+                console.log('Show StartTime:' + d.toLocaleTimeString());
+                for (i=0; i < grid.length; i++) {
+                    for (j=0; j < grid[i].length; j++) {
+                        var color = 'yellow';
+                        if (grid[i][j]) color = 'red';
+                        board.create('point', [j, 0-i], {name:'', strokecolor:color, face:'square', size:1});
+                    }
+                }
+                d = new Date();
+                console.log('Show endTime:' + d.toLocaleTimeString());
+            }
+            async function iterate(grid) {
+                var sr = getRequestBody(grid);
+                var result = await sendRequest(sr);
+                var newgrid = XMLtoGrid(result.toString());
+                log('Result:' + newgrid.join(','));
+                showGrid(newgrid);
+                return newgrid;
+            }
+            async function runLife() {
+                var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
+                for (ii=0; ii < 25; ii++) {
+                    console.log('Iteration ' + (ii+1));
+                    grid = await iterate(grid);
+                }
+            }
+            runLife();
             alert('fetched');
 /*
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
