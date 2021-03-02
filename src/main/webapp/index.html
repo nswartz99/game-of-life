@@ -11,6 +11,10 @@
             <a href="GameOfLifeService?wsdl">GameOfLifeService?wsdl</a>
         </div>
         <p/>
+        <input type="number" placeholder="Iteration Count" id="iterations"/>
+        <button onclick="{clearGrid(); runLife();}">Restart</button>
+        <button onclick="stopLife()">Stop</button>
+        <p/>
         <canvas id="canvas" width="500" height="500"></canvas>
         <script type="text/javascript">
             function log(str) {
@@ -44,7 +48,7 @@
             }
 
             async function sendRequest(req) {
-                var response = await fetch('http://127.0.0.1:8080/game-of-life/GameOfLifeService', {
+                var response = await fetch('http://127.0.0.1:8180/game-of-life/GameOfLifeService', {
                     method: 'POST',
                     body: req,
                     headers: {
@@ -64,7 +68,6 @@
                 const resultString = doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null);
                 var newgrid = [];
                 var result = resultString.iterateNext().textContent;
-                log('returned:' + result);
                 result.split(',').forEach(row => {
                     log('RA:' + row);
                     newgrid.push([]);
@@ -84,10 +87,8 @@
                 console.log('Show StartTime:' + d.toLocaleTimeString());
                 for (i=0; i < grid.length; i++) {
                     for (j=0; j < grid[i].length; j++) {
-                        var color = 'yellow';
-                        if (grid[i][j]) color = 'red';
-                        ctx.fillStyle = 'rgb(220, 220, 220)';
-                        if (grid[i][j]) ctx.fillStyle = 'rgb(0, 0, 0)';
+                        ctx.fillStyle = 'rgb(220, 220, 220)'; // light grey
+                        if (grid[i][j]) ctx.fillStyle = 'rgb(0, 0, 0)'; // Black
                         ctx.fillRect(j*3, i*3, 3, 3);
                     }
                 }
@@ -102,15 +103,26 @@
                 showGrid(newgrid);
                 return newgrid;
             }
+            var stopIt = false;
             async function runLife() {
                 var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
 //                var grid = [[false,false,false,false], [false, true, true, true], [false, false, false, true], [false, false, true, false]]; // Glider
-                for (ii=0; ii < 100; ii++) {
+                console.log('Iterations' + document.getElementById("iterations"));
+                for (ii=0; ii < document.getElementById("iterations").value && !stopIt; ii++) {
                     console.log('Iteration ' + (ii+1));
                     grid = await iterate(grid);
                 }
             }
-            runLife();
+            function stopLife() {
+                console.log('Stopping iterations upon reques');
+                stopIt = true;
+            }
+            function clearGrid() {
+                console.log('Clearing ..');
+                ctx.clearRect(0,0,500,500);
+                stopIt = false;
+            }
+//            runLife();
 /*
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
     <soap:Body>
