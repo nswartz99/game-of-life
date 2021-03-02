@@ -17,12 +17,12 @@ public class GameOfLifeServiceImpl implements GameOfLifeService {
         if (g == null) return new Boolean[0][0];
         long start = System.currentTimeMillis();
          System.out.println("Grid:" + g[0][0] + "," + g[1][1]);
-        Grid grid = new CompactGrid(new BooleanGrid(g));
+        Grid<Boolean> grid = new CompactGrid(new BooleanGrid(g));
         Generation main = new Generation();
         grid = main.advance(grid);
         System.out.println("Time for request is " + (System.currentTimeMillis() - start));
         System.out.println(grid.toString());
-        return grid.toBooleanArray();
+        return grid.toCellTypeArray();
     }
 
     @Override

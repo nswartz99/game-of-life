@@ -5,7 +5,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class CompactGrid implements Grid {
+public class CompactGrid implements Grid<Boolean> {
     private List<BitSet> grid = new ArrayList<>();
     private int rows = 0;
     private int columns = 0;
@@ -43,7 +43,7 @@ public class CompactGrid implements Grid {
         return true;
     }
     @Override
-    public boolean getCell(int i, int j) {
+    public Boolean getCell(int i, int j) {
         return grid.get(i).get(j);
     }
     @Override
@@ -56,33 +56,23 @@ public class CompactGrid implements Grid {
     }
 
     @Override
-    public void setCell(int i, int j) {
-        grid.get(i).set(j);
-    }
-
-    @Override
-    public void clearCell(int i, int j) {
-        grid.get(i).clear(j);
-    }
-
-    @Override
-    public void setCell(int i, int j, boolean b) {
+    public void setCell(int i, int j, Boolean b) {
         grid.get(i).set(j, b);
     }
 
     @Override
-    public Grid getNewEmptyGrid(int i, int j) {
+    public Grid<Boolean> getNewEmptyGrid(int i, int j) {
         return new CompactGrid(i, j);
     }
 
     @Override
-    public Grid getNewEmptyGrid() {
+    public Grid<Boolean> getNewEmptyGrid() {
         return getNewEmptyGrid(getRowCount(), getColumnCount());
     }
 
     // TODO This is inefficient.
     @Override
-    public void copyFromGrid(int rowOffset, int colOffset, Grid old) {
+    public void copyFromGrid(int rowOffset, int colOffset, Grid<Boolean> old) {
         for (int i=0; i < old.getRowCount(); i++) {
             for (int j=0; j < old.getColumnCount(); j++) {
                 if (old.getCell(i, j)) grid.get(i+rowOffset).set(j+colOffset);
@@ -102,7 +92,7 @@ public class CompactGrid implements Grid {
     }
 
     @Override
-    public Boolean[][] toBooleanArray() {
+    public Boolean[][] toCellTypeArray() {
         Boolean[][] b = new Boolean[this.getRowCount()][this.getColumnCount()];
         for (int i=0; i < this.getRowCount(); i++) {
             for (int j=0; j < this.getColumnCount(); j++) {

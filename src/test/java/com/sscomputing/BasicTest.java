@@ -29,7 +29,7 @@ public class BasicTest {
 
     @Test
     public void basicSmallGrid() {
-        Grid grid = new BooleanGrid(start);
+        Grid<Boolean> grid = new BooleanGrid(start);
         assertFalse("0,0", grid.getCell(0, 0));
         assertTrue("0,1", grid.getCell(0, 1));
         assertFalse("0,2", grid.getCell(0, 2));
@@ -42,7 +42,7 @@ public class BasicTest {
     }
     @Test
     public void basicCompactGrid() {
-        Grid grid = new CompactGrid(new BooleanGrid(start));
+        Grid<Boolean> grid = new CompactGrid(new BooleanGrid(start));
         assertFalse("0,0", grid.getCell(0, 0));
         assertTrue("0,1", grid.getCell(0, 1));
         assertFalse("0,2", grid.getCell(0, 2));
@@ -58,7 +58,7 @@ public class BasicTest {
         assertEquals("Rows not correct", 3, main.getCurrent().getRowCount());
         assertEquals("Columns not correct", 3, main.getCurrent().getColumnCount());
         main.iterate();
-        Grid grid = main.getCurrent();
+        Grid<Boolean> grid = main.getCurrent();
         // The Iterate will expand the grid because there are populated cells in the first and last rows.
         assertEquals("Rows not correct", 5, main.getCurrent().getRowCount());
         assertEquals("Columns not correct", 5, main.getCurrent().getColumnCount());
@@ -106,7 +106,7 @@ public class BasicTest {
     @Test
     public void printit() {
         main.iterate(100);
-        Grid grid = main.getCurrent();
+        Grid<Boolean> grid = main.getCurrent();
         printGrid(grid);
         main.iterate();
         grid = main.getCurrent();
@@ -118,7 +118,7 @@ public class BasicTest {
     public void rPentomnio() {
         rPentominoInit();
         main.iterate(50);
-        Grid grid = main.getCurrent();
+        Grid<Boolean> grid = main.getCurrent();
         printGrid(grid);
         main.iterate(50);
         grid = main.getCurrent();
@@ -128,7 +128,7 @@ public class BasicTest {
         printGrid(grid);
     }
 
-    private void printGrid(Grid g) {
+    private void printGrid(Grid<Boolean> g) {
         for (int i=0; i < g.getRowCount(); i++) {
             for (int j=0; j < g.getColumnCount(); j++) {
                 System.out.print(g.getCell(i, j) ? "X" : "_");

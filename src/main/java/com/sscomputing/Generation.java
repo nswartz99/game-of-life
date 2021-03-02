@@ -1,8 +1,8 @@
 package com.sscomputing;
 
 public class Generation {
-    public Grid advance(Grid input) {
-        Grid current = input;
+    public Grid<Boolean> advance(Grid<Boolean> input) {
+        Grid<Boolean> current = input;
         int offset = 0;
         int padding = 0;
         if (! current.isRowEmpty(0)) offset++;
@@ -13,7 +13,7 @@ public class Generation {
             current = current.getNewEmptyGrid(current.getRowCount() + offset + padding, current.getColumnCount() + offset + padding);
             current.copyFromGrid(offset, offset, input);
         }
-        Grid next = current.getNewEmptyGrid(current.getRowCount(), current.getColumnCount());
+        Grid<Boolean> next = current.getNewEmptyGrid(current.getRowCount(), current.getColumnCount());
         for (int i = 0; i < current.getRowCount(); i++) {
             for (int j = 0; j < current.getColumnCount(); j++) {
                 int sum = 0;
@@ -32,9 +32,9 @@ public class Generation {
                 if (j > lowerJ && current.getCell(i, j-1)) sum++;
                 if (j < upperJ && current.getCell(i, j+1)) sum++;
                 if (current.getCell(i, j)) {
-                    if (sum == 3 || sum == 2) next.setCell(i, j);
+                    if (sum == 3 || sum == 2) next.setCell(i, j, true);
                 } else {
-                    if (sum == 3) next.setCell(i, j);
+                    if (sum == 3) next.setCell(i, j, true);
                 }
             }
         }

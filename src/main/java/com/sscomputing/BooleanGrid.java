@@ -3,7 +3,7 @@ package com.sscomputing;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BooleanGrid implements Grid {
+public class BooleanGrid implements Grid<Boolean> {
     public class Row {
         private List<Boolean> cells = new ArrayList<>();
 
@@ -55,7 +55,7 @@ public class BooleanGrid implements Grid {
         return rows.get(i);
     }
     @Override
-    public boolean getCell(int i, int j) {
+    public Boolean getCell(int i, int j) {
         return rows.get(i).getCell(j);
     }
 
@@ -70,27 +70,17 @@ public class BooleanGrid implements Grid {
     }
 
     @Override
-    public void setCell(int i, int j) {
-        rows.get(i).setCell(j);
-    }
-
-    @Override
-    public void clearCell(int i, int j) {
-        rows.get(i).clearCell(j);
-    }
-
-    @Override
-    public void setCell(int i, int j, boolean b) {
+    public void setCell(int i, int j, Boolean b) {
         rows.get(i).setCell(j, b);
     }
 
     @Override
-    public Grid getNewEmptyGrid(int i, int j) {
+    public Grid<Boolean> getNewEmptyGrid(int i, int j) {
         return new BooleanGrid(i, j);
     }
 
     @Override
-    public Grid getNewEmptyGrid() {
+    public Grid<Boolean> getNewEmptyGrid() {
         return getNewEmptyGrid(getRowCount(), getColumnCount());
     }
 
@@ -110,7 +100,7 @@ public class BooleanGrid implements Grid {
         return false;
     }
     @Override
-    public void copyFromGrid(int rowOffset, int colOffset, Grid old) {
+    public void copyFromGrid(int rowOffset, int colOffset, Grid<Boolean> old) {
         for (int i=0; i < old.getRowCount(); i++) {
             for (int j=0; j < old.getColumnCount(); j++) {
                 if (old.getCell(i, j)) rows.get(i+rowOffset).setCell(j+colOffset);
@@ -129,7 +119,7 @@ public class BooleanGrid implements Grid {
         return s.toString();
     }
     @Override
-    public Boolean[][] toBooleanArray() {
+    public Boolean[][] toCellTypeArray() {
         Boolean[][] b = new Boolean[this.getRowCount()][this.getColumnCount()];
         for (int i=0; i < this.getRowCount(); i++) {
             for (int j=0; j < this.getColumnCount(); j++) {
