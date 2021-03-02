@@ -5,24 +5,24 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class CompactGrid implements Grid<Boolean> {
+public class CompactGrid extends GridBase<Boolean> implements Grid<Boolean> {
     private List<BitSet> grid = new ArrayList<>();
-    private int rows = 0;
     private int columns = 0;
 
     public CompactGrid(BooleanGrid init) {
-        columns = init.getRow(0).getCells().size();
-        for (BooleanGrid.Row row : init.getRows()) {
-            BitSet bs = new BitSet(row.getCells().size());
+        columns = init.getColumnCount();
+        for (int i=0; i < init.getRowCount(); i++) {
+            BitSet bs = new BitSet(columns);
             grid.add(bs);
-            IntStream.range(0, row.getCells().size()).forEach(i -> bs.set(i, row.getCell(i)));
-            rows++;
+            for (int j=0; j < columns; j++) {
+                Boolean v = init.getCell(i, j);
+                bs.set(j, v != null ? v.booleanValue() : getDefaultValue());
+            }
         }
     }
     public CompactGrid(int i, int j) {
-        IntStream.range(0, i).forEach( jj -> grid.add(new BitSet(j)));
-        rows = i;
         columns = j;
+        IntStream.range(0, i).forEach( jj -> grid.add(new BitSet(j)));
     }
     public List<BitSet> getGrid() {
         return grid;
@@ -36,19 +36,12 @@ public class CompactGrid implements Grid<Boolean> {
         return false;
     }
     @Override
-    public boolean isColumnEmpty(int j) {
-        for (BitSet bs : grid) {
-            if (bs.get(j)) return false;
-        }
-        return true;
-    }
-    @Override
     public Boolean getCell(int i, int j) {
         return grid.get(i).get(j);
     }
     @Override
     public int getRowCount() {
-        return rows;
+        return grid.size();
     }
     @Override
     public int getColumnCount() {
@@ -79,28 +72,6 @@ public class CompactGrid implements Grid<Boolean> {
             }
         }
     }
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        for (int i=0; i < this.getRowCount(); i++) {
-            for (int j=0; j < this.getColumnCount(); j++) {
-                s.append(this.getCell(i, j) ? "X" : "_");
-            }
-            s.append("\n");
-        }
-        s.append("\n");
-        return s.toString();
-    }
-
-    @Override
-    public Boolean[][] toCellTypeArray() {
-        Boolean[][] b = new Boolean[this.getRowCount()][this.getColumnCount()];
-        for (int i=0; i < this.getRowCount(); i++) {
-            for (int j=0; j < this.getColumnCount(); j++) {
-                b[i][j] = this.getCell(i, j);
-            }
-        }
-        return b;
-    }
 
     @Override
     public String toCompactString() {
@@ -112,5 +83,20 @@ public class CompactGrid implements Grid<Boolean> {
             if (i < this.getRowCount()-1) s.append(",");
         }
         return s.toString();
+    }
+
+    @Override
+    protected Boolean[][] getNewEmptyArray(int i, int j) {
+        return new Boolean[i][j];
+    }
+
+    @Override
+    public Boolean getDefaultValue() {
+        return false;
+    }
+
+    @Override
+    public boolean isDefaultValue(Boolean v) {
+        return !v;
     }
 }

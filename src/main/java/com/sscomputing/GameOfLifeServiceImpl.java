@@ -37,9 +37,11 @@ public class GameOfLifeServiceImpl implements GameOfLifeService {
     public String iterateCompact(String g) {
         if (g == null || g.length() == 0) return "";
         long start = System.currentTimeMillis();
-        Grid grid = new CompactGrid(BooleanGrid.fromString(g));
+//        System.out.println("Input is " + g);
+        Grid<Boolean> grid = new CompactGrid(BooleanGrid.fromString(g));
         Generation main = new Generation();
         grid = main.advance(grid);
+//        System.out.println("Grid is " + grid.toCompactString());
         System.out.println("Time for request is " + (System.currentTimeMillis() - start));
         return grid.toCompactString();
     }

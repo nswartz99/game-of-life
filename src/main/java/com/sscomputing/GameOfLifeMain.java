@@ -4,7 +4,7 @@ import java.util.stream.IntStream;
 
 public class GameOfLifeMain {
     private BooleanGrid start;
-    private Grid current;
+    private Grid<Boolean> current;
     private int iterations = 0;
     private Generation gen = new Generation();
 
@@ -12,7 +12,7 @@ public class GameOfLifeMain {
         start = new BooleanGrid(init);
         current = new CompactGrid(start);
     }
-    public Grid getCurrent() {
+    public Grid<Boolean> getCurrent() {
         return current;
     }
     public void iterate() {

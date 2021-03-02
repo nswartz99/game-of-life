@@ -16,6 +16,7 @@ public class Generation {
         Grid<Boolean> next = current.getNewEmptyGrid(current.getRowCount(), current.getColumnCount());
         for (int i = 0; i < current.getRowCount(); i++) {
             for (int j = 0; j < current.getColumnCount(); j++) {
+//                System.out.println("Offset:" + offset + " padding:" + padding + " i:" + i + " j:" + j + " current:" + current.getCell(i, j));
                 int sum = 0;
                 int lowerJ = j > 0 ? j-1 : j;
                 int upperJ = j < current.getColumnCount() - 1 ? j + 1 : j;
@@ -36,6 +37,7 @@ public class Generation {
                 } else {
                     if (sum == 3) next.setCell(i, j, true);
                 }
+//                System.out.println("Offset:" + offset + " padding:" + padding + " i:" + i + " j:" + j + " upperJ:" + upperJ + " lowerJ:" + lowerJ + " current:" + current.getCell(i, j) + " next:" + next.getCell(i, j) + " sum:" + sum);
             }
         }
         return next;
