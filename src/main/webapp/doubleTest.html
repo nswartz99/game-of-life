@@ -2,20 +2,20 @@
     <head>
     </head>
     <body>
-        <h2>Game Of Life!</h2>
+        <h2>Double Test!</h2>
         <p>
-            This will run the Game Of Life for a basic starting point
+            This will run the Double Test
         </p>
         <p/>
         <input type="number" placeholder="Iteration Count" id="iterations"/>
-        <button onclick="{clearGrid(); runIterations(initializeRPentomino, iterateLife);}">RPentomino</button>
-        <button onclick="{clearGrid(); runIterations(initializeGlider, iterateLife);}">Glider</button>
+        <button onclick="sayHello('DoubleTestService')">Test</button>
+        <button onclick="iterateDoubleTest()">DoubleTest</button>
         <button onclick="stopIteration()">Stop</button>
         <p/>
         <a href="index.html">Back</a>
         <p/>
         <canvas id="canvas" width="500" height="500"></canvas>
         <script type="text/javascript" src="jsServices.js">clearGrid()</script>
-        <script type="text/javascript" src="golServices.js">init()</script>
+        <script type="text/javascript" src="dtServices.js">init()</script>
     </body>
 </html>

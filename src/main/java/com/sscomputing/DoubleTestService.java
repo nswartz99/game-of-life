@@ -4,11 +4,9 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 
 @WebService(targetNamespace = "http://sscomputing.com")
-public interface GameOfLifeService {
+public interface DoubleTestService {
     @WebMethod
-    String sayHello();
+    String sayHello(String s);
     @WebMethod
-    Boolean[][] iterate(Boolean[][] g);
-    @WebMethod
-    String iterateCompact(String g);
+    Double[][] iterate(Double[][] g);
 }

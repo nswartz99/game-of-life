@@ -26,14 +26,6 @@ public class GameOfLifeServiceImpl implements GameOfLifeService {
     }
 
     @Override
-    public Boolean[][] sayBooleanArray() {
-        Boolean[][] g = new Boolean[3][3];
-        g[0][1] = true; g[1][1] = true; g[2][1] = true; 
-        g[0][0] = false;
-        return g;
-    }
-
-    @Override
     public String iterateCompact(String g) {
         if (g == null || g.length() == 0) return "";
         long start = System.currentTimeMillis();
