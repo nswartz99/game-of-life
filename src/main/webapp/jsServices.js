@@ -9,35 +9,35 @@ var ctx = canvas.getContext('2d');
 function log(str) {
     console.log(str);
 }
-function getRequestBody(g) {
+function getRequestBody(methodName, g, stringify) { // stringify is a function that renders a value into a string for transmission
     var sr = new Array();
     sr.push('<?xml version="1.0" encoding="utf-8"?>');
     sr.push('<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-            'xmlns:api="http://sscomputing.com/game-of-life/GameOfLife" ' +
+            'xmlns:api="http://sscomputing.com" ' +
             'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
             'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">');
     sr.push('<soapenv:Body>');
-    sr.push('<api:iterateCompact soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
+    sr.push('<api:' + methodName + ' soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
     sr.push('<arg0>');
     var s = [];
     for (i=0; i < g.length; i++) {
         var row = [];
         for (j=0; j < g[i].length; j++) {
-            row.push(g[i][j] ? '1' : '0');
+            row.push(stringify(g[i][j]));
         }
         s.push(row.join(''));
     }
     sr.push(s.join(','));
     sr.push('</arg0>');
-    sr.push('</api:iterateCompact>');
+    sr.push('</api:' + methodName + '>');
     sr.push('</soapenv:Body>');
     sr.push('</soapenv:Envelope>');
     log(sr);
     return sr.join('');
 }
 
-async function sendRequest(req) {
-    var url = window.location.href.replace(/[^/]+$/, 'GameOfLifeService');
+async function sendRequest(req, serviceName) {
+    var url = window.location.href.replace(/[^/]+$/, serviceName);
     console.log('URL:' + url);
     var response = await fetch(url, {
         method: 'POST',
@@ -51,7 +51,7 @@ async function sendRequest(req) {
     return await response;
 }
 
-function XMLtoGrid(xml) {
+function XMLtoGrid(xml, unstringify) { //unstringify gets a value based on a string
     var d = new Date();
     console.log('StartTime:' + d.toLocaleTimeString());
     const parser = new DOMParser();
@@ -60,10 +60,11 @@ function XMLtoGrid(xml) {
     var newgrid = [];
     var result = resultString.iterateNext().textContent;
     result.split(',').forEach(row => {
-        log('RA:' + row);
+        log('RA:' + row + '/');
         newgrid.push([]);
-        for (j=0; j < row.length; j++) {
-            if (row[j].match('1')) newgrid[newgrid.length-1].push(true); else newgrid[newgrid.length-1].push(false);
+        const datums = row.split(' ');
+        for (j=0; j < datums.length; j++) {
+            newgrid[newgrid.length-1].push(unstringify(datums[j]));
         }
     });
     d = new Date();
@@ -71,13 +72,13 @@ function XMLtoGrid(xml) {
     return newgrid;
 }
 
-function showGrid(grid) {
+function showBooleanGrid(grid) {
     var d = new Date();
     console.log('Show StartTime:' + d.toLocaleTimeString());
     for (i=0; i < grid.length; i++) {
-        if (i*cellsize >= canvas.offsetHeight-1) stopLife();
+        if (i*cellsize >= canvas.offsetHeight-1) stopIteration();
         for (j=0; j < grid[i].length; j++) {
-            if (j*cellsize >= canvas.offsetWidth-1) stopLife();
+            if (j*cellsize >= canvas.offsetWidth-1) stopIteration();
             ctx.fillStyle = backgroundColor;
             if (grid[i][j]) ctx.fillStyle = cellColor;
             ctx.fillRect(j*cellsize, i*cellsize, cellsize, cellsize);
@@ -86,25 +87,25 @@ function showGrid(grid) {
     d = new Date();
     console.log('Show endTime:' + d.toLocaleTimeString());
 }
-async function iterate(grid) {
-    var sr = getRequestBody(grid);
-    var result = await sendRequest(sr);
-    var newgrid = XMLtoGrid(result.toString());
+async function iterateLife(grid) {
+    var sr = getRequestBody('iterateCompact', grid, v => (v ? '1' : '0'));
+    var result = await sendRequest(sr, 'GameOfLifeService');
+    var newgrid = XMLtoGrid(result.toString(), str => (str.match('1') ? true : false));
     log('Result:' + newgrid.join(','));
-    showGrid(newgrid);
+    showBooleanGrid(newgrid);
     return newgrid;
 }
-async function runLife() {
+async function runIterations(iterationFunc) {
     var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
 //                var grid = [[false,false,false,false], [false, true, true, true], [false, false, false, true], [false, false, true, false]]; // Glider
     console.log('Iterations' + document.getElementById("iterations"));
     for (ii=0; ii < document.getElementById("iterations").value && !stopIt; ii++) {
         console.log('Iteration ' + (ii+1));
-        grid = await iterate(grid);
+        grid = await iterationFunc(grid);
     }
     return grid;
 }
-function stopLife() {
+function stopIteration() {
     console.log('Stopping iterations upon request');
     stopIt = true;
 }

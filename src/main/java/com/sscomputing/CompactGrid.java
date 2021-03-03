@@ -78,11 +78,11 @@ public class CompactGrid extends GridBase<Boolean> implements Grid<Boolean> {
         StringBuilder s = new StringBuilder();
         for (int i=0; i < this.getRowCount(); i++) {
             for (int j=0; j < this.getColumnCount(); j++) {
-                s.append(this.getCell(i, j) ? "1" : "0");
+                s.append(this.getCell(i, j) ? "1 " : "0 ");
             }
             if (i < this.getRowCount()-1) s.append(",");
         }
-        return s.toString();
+        return s.toString().replaceAll(" ,", ",");
     }
 
     @Override
