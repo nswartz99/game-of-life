@@ -95,9 +95,8 @@ async function iterateLife(grid) {
     showBooleanGrid(newgrid);
     return newgrid;
 }
-async function runIterations(iterationFunc) {
-    var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
-//                var grid = [[false,false,false,false], [false, true, true, true], [false, false, false, true], [false, false, true, false]]; // Glider
+async function runIterations(initFunc, iterationFunc) {
+    var grid = initFunc();
     console.log('Iterations' + document.getElementById("iterations"));
     for (ii=0; ii < document.getElementById("iterations").value && !stopIt; ii++) {
         console.log('Iteration ' + (ii+1));
@@ -113,4 +112,13 @@ function clearGrid() {
     console.log('Clearing ..');
     ctx.clearRect(0,0,500,500);
     stopIt = false;
+}
+
+function initializeRPentomino() {
+    var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
+    return grid;
+}
+function initializeGlider() {
+    var grid = [[false,false,false,false], [false, true, true, true], [false, false, false, true], [false, false, true, false]]; // Glider
+    return grid;
 }
