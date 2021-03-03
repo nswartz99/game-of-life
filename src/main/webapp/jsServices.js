@@ -54,11 +54,8 @@ async function sendRequest(req, serviceName) {
 function XMLtoGrid(xml, unstringify) { //unstringify gets a value based on a string
     var d = new Date();
     console.log('StartTime:' + d.toLocaleTimeString());
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xml, 'text/xml');
-    const resultString = doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null);
+    var result = getXMLReturn(xml);
     var newgrid = [];
-    var result = resultString.iterateNext().textContent;
     result.split(',').forEach(row => {
         log('RA:' + row + '/');
         newgrid.push([]);
@@ -71,7 +68,13 @@ function XMLtoGrid(xml, unstringify) { //unstringify gets a value based on a str
     console.log('endTime:' + d.toLocaleTimeString());
     return newgrid;
 }
-
+function getXMLReturn(xml) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xml, 'text/xml');
+    const resultString = doc.evaluate('//return', doc, null, XPathResult.ANY_TYPE, null);
+    var result = resultString.iterateNext().textContent;
+    return result;
+}
 function showBooleanGrid(grid) {
     var d = new Date();
     console.log('Show StartTime:' + d.toLocaleTimeString());
@@ -87,13 +90,12 @@ function showBooleanGrid(grid) {
     d = new Date();
     console.log('Show endTime:' + d.toLocaleTimeString());
 }
-async function iterateLife(grid) {
-    var sr = getRequestBody('iterateCompact', grid, v => (v ? '1' : '0'));
-    var result = await sendRequest(sr, 'GameOfLifeService');
-    var newgrid = XMLtoGrid(result.toString(), str => (str.match('1') ? true : false));
-    log('Result:' + newgrid.join(','));
-    showBooleanGrid(newgrid);
-    return newgrid;
+async function sayHello(service) {
+    var sr = getRequestBody('sayHello', '');
+    var result = await sendRequest(sr, service);
+    var response = getXMLReturn(result.toString());
+    log('Response:' + response);
+    return response;
 }
 async function runIterations(initFunc, iterationFunc) {
     var grid = initFunc();
@@ -112,13 +114,4 @@ function clearGrid() {
     console.log('Clearing ..');
     ctx.clearRect(0,0,500,500);
     stopIt = false;
-}
-
-function initializeRPentomino() {
-    var grid = [[false, true, true], [true, true, false], [false, true, false]]; // rpentomino
-    return grid;
-}
-function initializeGlider() {
-    var grid = [[false,false,false,false], [false, true, true, true], [false, false, false, true], [false, false, true, false]]; // Glider
-    return grid;
 }
