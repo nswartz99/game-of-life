@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class BasicTest {
+public class BasicLifeTest {
     private Boolean[][] start = new Boolean[3][3];
     private GameOfLifeMain main = new GameOfLifeMain();
 

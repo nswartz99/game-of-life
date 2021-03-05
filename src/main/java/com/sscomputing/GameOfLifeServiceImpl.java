@@ -37,5 +37,11 @@ public class GameOfLifeServiceImpl implements GameOfLifeService {
         System.out.println("Time for request is " + (System.currentTimeMillis() - start));
         return grid.toCompactString();
     }
+
+    @Override
+    public Boolean[][] sayBooleanArray() {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

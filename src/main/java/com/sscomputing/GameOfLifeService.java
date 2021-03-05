@@ -11,4 +11,6 @@ public interface GameOfLifeService {
     Boolean[][] iterate(Boolean[][] g);
     @WebMethod
     String iterateCompact(String g);
+    @WebMethod
+    Boolean[][] sayBooleanArray();
 }

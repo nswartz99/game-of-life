@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class BasicIT {
+public class BasicLifeIT {
     private static final String APP_NAME = "game-of-life";
     private static final String WSDL_PATH = "GameOfLifeService?wsdl";
 
