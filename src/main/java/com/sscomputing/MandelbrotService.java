@@ -8,5 +8,5 @@ public interface MandelbrotService {
     @WebMethod
     String sayHello(String s);
     @WebMethod
-    Double[][] iterate(int count, int dim, Double xStart, Double yStart, Double xEnd, Double yEnd);
+    String iterate(int count, int dim, Double xStart, Double yStart, Double xEnd, Double yEnd);
 }

@@ -1,0 +1,25 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <h2>Mandelbrot Test!</h2>
+        <p>
+            This will run the Mandelbrot Test
+        </p>
+        <p/>
+        <input type="number" placeholder="Iteration Count" id="iterations" value="100"/>
+        <input type="number" placeholder="Dimension" id="dimension" value="100"/>
+        <input type="number" placeholder="Real Start" id="xStart" value="0"/>
+        <input type="number" placeholder="Imaginary Start" id="yStart" value="0"/>
+        <input type="number" placeholder="Real Limit" id="xEnd" value="1"/>
+        <input type="number" placeholder="Imaginary Limit" id="yEnd" value="1"/>
+        <button onclick="iterateMandel()">Mandelbrot</button>
+        <button onclick="stopIteration()">Stop</button>
+        <p/>
+        <a href="index.html">Back</a>
+        <p/>
+        <canvas id="canvas" width="500" height="500"></canvas>
+        <script type="text/javascript" src="jsServices.js">clearGrid()</script>
+        <script type="text/javascript" src="mandelServices.js">init()</script>
+    </body>
+</html>

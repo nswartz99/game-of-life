@@ -9,16 +9,7 @@ var ctx = canvas.getContext('2d');
 function log(str) {
     console.log(str);
 }
-function getRequestBody(methodName, g, stringify) { // stringify is a function that renders a value into a string for transmission
-    var sr = new Array();
-    sr.push('<?xml version="1.0" encoding="utf-8"?>');
-    sr.push('<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-            'xmlns:api="http://sscomputing.com" ' +
-            'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
-            'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">');
-    sr.push('<soapenv:Body>');
-    sr.push('<api:' + methodName + ' soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
-    sr.push('<arg0>');
+function gridArg(g, stringify) {
     var s = [];
     for (i=0; i < g.length; i++) {
         var row = [];
@@ -27,8 +18,28 @@ function getRequestBody(methodName, g, stringify) { // stringify is a function t
         }
         s.push(row.join(''));
     }
-    sr.push(s.join(','));
-    sr.push('</arg0>');
+    return s.join(',');
+}
+
+function getRequestBody(methodName, args, stringify) { // stringify is a function that renders a value into a string for transmission
+    var sr = new Array();
+    sr.push('<?xml version="1.0" encoding="utf-8"?>');
+    sr.push('<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+            'xmlns:api="http://sscomputing.com" ' +
+            'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
+            'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">');
+    sr.push('<soapenv:Body>');
+    sr.push('<api:' + methodName + ' soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">');
+    for (a=0; a < args.length; a++) {
+        sr.push('<arg' + a + '>');
+        if (Array.isArray(args[a])) {
+            sr.push(gridArg(args[a], stringify));
+        } else {
+            console.log('A:' + args[a]);
+            sr.push(args[a].toString());
+        }
+        sr.push('</arg' + a + '>');
+    }
     sr.push('</api:' + methodName + '>');
     sr.push('</soapenv:Body>');
     sr.push('</soapenv:Envelope>');
@@ -84,6 +95,23 @@ function showBooleanGrid(grid) {
             if (j*cellsize >= canvas.offsetWidth-1) stopIteration();
             ctx.fillStyle = backgroundColor;
             if (grid[i][j]) ctx.fillStyle = cellColor;
+            ctx.fillRect(j*cellsize, i*cellsize, cellsize, cellsize);
+        }
+    }
+    d = new Date();
+    console.log('Show endTime:' + d.toLocaleTimeString());
+}
+function showDoubleGrid(grid) {
+    var d = new Date();
+    console.log('Show StartTime:' + d.toLocaleTimeString());
+    for (i=0; i < grid.length; i++) {
+        if (i*cellsize >= canvas.offsetHeight-1) stopIteration();
+        for (j=0; j < grid[i].length; j++) {
+            if (j*cellsize >= canvas.offsetWidth-1) stopIteration();
+            var r = Math.min(128*grid[i][j], 255);
+            var b = 100;
+            var g = 100;
+            ctx.fillStyle = 'rgb(' + r + ',' + b + ',' + g + ')';
             ctx.fillRect(j*cellsize, i*cellsize, cellsize, cellsize);
         }
     }

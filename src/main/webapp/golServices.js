@@ -10,7 +10,7 @@ function initializeGlider() {
     return grid;
 }
 async function iterateLife(grid) {
-    var sr = getRequestBody('iterateCompact', grid, v => (v ? '1' : '0'));
+    var sr = getRequestBody('iterateCompact', [grid], v => (v ? '1' : '0'));
     var result = await sendRequest(sr, 'GameOfLifeService');
     var newgrid = XMLtoGrid(result.toString(), str => (str.match('1') ? true : false));
     log('Result:' + newgrid.join(','));
